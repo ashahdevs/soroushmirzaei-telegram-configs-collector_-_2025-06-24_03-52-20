@@ -7,6 +7,7 @@ from pathlib import Path
 import math
 import string
 import random
+import urllib.parse
 
 import jdatetime
 from datetime import datetime, timezone, timedelta
@@ -32,7 +33,7 @@ if os.path.exists('./geoip-lite/geoip-lite-country.mmdb'):
     os.remove('./geoip-lite/geoip-lite-country.mmdb')
 
 # Download the file and rename it
-url = 'https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb'
+url = 'https://git.io/GeoLite2-Country.mmdb'
 filename = 'geoip-lite-country.mmdb'
 wget.download(url, filename)
 
@@ -328,10 +329,32 @@ for index, tg_user in enumerate(array_usernames):
     array_usernames[index] = tg_user
 
 
-# Retrive and update channels from telegram proxies Repository
-url = 'https://raw.githubusercontent.com/soroushmirzaei/telegram-proxies-collector/main/telegram channels.json'
-filename = 'telegram proxies channel.json'
-wget.download(url, filename)
+
+filename = 'telegram channels.json'  # or whatever your local file is named
+local_filename = 'telegram proxies channel.json'
+
+try:
+    # Check if the source file exists
+    if os.path.exists(filename):
+        # Read the original file
+        with open(filename, 'r', encoding='utf-8') as f:
+            channels_data = json.load(f)
+        
+        # Update or modify the data if needed
+        # channels_data = update_channels(channels_data)  # your update logic
+        
+        # Save to the target file
+        with open(local_filename, 'w', encoding='utf-8') as f:
+            json.dump(channels_data, f, indent=2, ensure_ascii=False)
+        
+        print(f"Channels updated successfully: {local_filename}")
+    else:
+        print(f"Source file not found: {filename}")
+        
+except json.JSONDecodeError as e:
+    print(f"JSON parsing error: {e}")
+except Exception as e:
+    print(f"Error processing file: {e}")
 
 tg_username_list.update(array_usernames)
 telegram_proxies_channel = json_load('./telegram proxies channel.json')
